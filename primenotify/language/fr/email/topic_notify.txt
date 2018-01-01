@@ -1,0 +1,16 @@
+Subject: Notification de reponse a un sujet - Å· {TOPIC_TITLE} Å‚
+
+Bonjour {USERNAME}, un nouveau message a ete poste dans le sujet Å· {TOPIC_TITLE} Å‚ sur le site Å· {SITENAME} Å‚ depuis votre derniere visite. Vous pouvez acceder au message en cliquant sur le lien suivant : {U_NEWEST_POST}
+_____________________________________________________________________
+Sujet : {TOPIC_TITLE}
+Auteur : {AUTHOR_NAME}
+Message :
+{MESSAGE}
+_____________________________________________________________________
+
+Pour acceder au sujet, cliquez sur le lien suivant :
+{U_TOPIC}
+
+{VISIT_MSG}Si vous souhaitez ne plus surveiller ce sujet, cliquez sur le lien Å· Se desabonner du sujet Å‚ sur la page du forum, ou cliquez sur le lien suivant :
+{U_STOP_WATCHING_TOPIC}
+{EMAIL_SIG}
