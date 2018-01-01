@@ -61,7 +61,7 @@ Creating, maintaining, and updating MODs requires a lot of time and effort, so i
 			<edit>
 				<find><![CDATA[		$board_url = generate_board_url();]]></find>
 				<action type="after-add"><![CDATA[//-- mod: Prime Notify ------------------------------------------------------//
-		include($this->phpbb_root_path . 'ext/primehalo/primenotify/prime_notify.' . $this->php_ext);
+		include_once($this->phpbb_root_path . 'ext/primehalo/primenotify/prime_notify.' . $this->php_ext);
 //-- end: Prime Notify ------------------------------------------------------//]]></action>
 			</edit>
 			<edit>
@@ -77,14 +77,14 @@ Creating, maintaining, and updating MODs requires a lot of time and effort, so i
 			<edit>
 				<find><![CDATA[			'SUBJECT'					=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),]]></find>
 				<action type="after-add"><![CDATA[//-- mod: Prime Notify ------------------------------------------------------//
-			'MESSAGE'					=>  $this->get_data('prime_notify_text'),
+			'MESSAGE'					=> htmlspecialchars_decode(censor_text($this->get_data('prime_notify_text'))),
 //-- end: Prime Notify ------------------------------------------------------//]]></action>
 			</edit>
 			<edit>
 				<find><![CDATA[		$this->set_data('message_subject', $pm['message_subject']);]]></find>
 				<action type="after-add"><![CDATA[
 //-- mod: Prime Notify ------------------------------------------------------//
-		include($this->phpbb_root_path . 'ext/primehalo/primenotify/prime_notify.' . $this->php_ext);
+		include_once($this->phpbb_root_path . 'ext/primehalo/primenotify/prime_notify.' . $this->php_ext);
 		$this->set_data('prime_notify_text', $prime_notify->get_processed_text($pm));
 //-- end: Prime Notify ------------------------------------------------------//]]></action>
 			</edit>
@@ -98,7 +98,7 @@ Creating, maintaining, and updating MODs requires a lot of time and effort, so i
 				AND notify_status = ' . NOTIFY_YES . '
 				AND user_id <> ' . (int) $post['poster_id'];]]></find>
 				<action type="after-add"><![CDATA[//-- mod: Prime Notify ------------------------------------------------------//
-		include($this->phpbb_root_path . 'ext/primehalo/primenotify/prime_notify.' . $this->php_ext);
+		include_once($this->phpbb_root_path . 'ext/primehalo/primenotify/prime_notify.' . $this->php_ext);
 		$prime_notify->alter_post_sql($sql);
 //-- end: Prime Notify ------------------------------------------------------//]]></action>
 			</edit>
@@ -125,14 +125,14 @@ Creating, maintaining, and updating MODs requires a lot of time and effort, so i
 			<edit>
 				<find><![CDATA[			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),]]></find>
 				<action type="after-add"><![CDATA[//-- mod: Prime Notify ------------------------------------------------------//
-			'MESSAGE'					=>  $this->get_data('prime_notify_text'),
+			'MESSAGE'					=> htmlspecialchars_decode(censor_text($this->get_data('prime_notify_text'))),
 //-- end: Prime Notify ------------------------------------------------------//]]></action>
 			</edit>
 			<edit>
 				<find><![CDATA[		$this->set_data('forum_name', $post['forum_name']);]]></find>
 				<action type="after-add"><![CDATA[
 //-- mod: Prime Notify ------------------------------------------------------//
-		include($this->phpbb_root_path . 'ext/primehalo/primenotify/prime_notify.' . $this->php_ext);
+		include_once($this->phpbb_root_path . 'ext/primehalo/primenotify/prime_notify.' . $this->php_ext);
 		$this->set_data('prime_notify_text', $prime_notify->get_processed_text($post));
 //-- end: Prime Notify ------------------------------------------------------//]]></action>
 			</edit>
@@ -146,21 +146,21 @@ Creating, maintaining, and updating MODs requires a lot of time and effort, so i
 				AND notify_status = ' . NOTIFY_YES . '
 				AND user_id <> ' . (int) $topic['poster_id'];]]></find>
 				<action type="after-add"><![CDATA[//-- mod: Prime Notify ------------------------------------------------------//
-		include("{$this->phpbb_root_path}/ext/primehalo/primenotify/prime_notify.{$this->php_ext}");
+		include_once("{$this->phpbb_root_path}/ext/primehalo/primenotify/prime_notify.{$this->php_ext}");
 		$prime_notify->alter_post_sql($sql);
 //-- end: Prime Notify ------------------------------------------------------//]]></action>
 			</edit>
 			<edit>
 				<find><![CDATA[			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),]]></find>
 				<action type="after-add"><![CDATA[//-- mod: Prime Notify ------------------------------------------------------//
-			'MESSAGE'					=>  $this->get_data('prime_notify_text'),
+			'MESSAGE'					=> htmlspecialchars_decode(censor_text($this->get_data('prime_notify_text'))),
 //-- end: Prime Notify ------------------------------------------------------//]]></action>
 			</edit>
 			<edit>
 				<find><![CDATA[		$this->set_data('forum_name', $post['forum_name']);]]></find>
 				<action type="after-add"><![CDATA[
 //-- mod: Prime Notify ------------------------------------------------------//
-		include($this->phpbb_root_path . 'ext/primehalo/primenotify/prime_notify.' . $this->php_ext);
+		include_once($this->phpbb_root_path . 'ext/primehalo/primenotify/prime_notify.' . $this->php_ext);
 		$this->set_data('prime_notify_text', $prime_notify->get_processed_text($post));
 //-- end: Prime Notify ------------------------------------------------------//]]></action>
 			</edit>
