@@ -27,7 +27,7 @@ if (!class_exists('prime_notify'))
 	*/
 	define('PRIME_NOTIFY_POST_ENABLED', true);	// Insert the post message into the notification e-mail?
 	define('PRIME_NOTIFY_PM_ENABLED', true);	// Insert the private message into the notification e-mail?
-	define('PRIME_NOTIFY_BBCODES', true);		// Keep BBCodes (helps show how the message is supposed to be formatted)?
+	define('PRIME_NOTIFY_BBCODES', false);		// Keep BBCodes (helps show how the message is supposed to be formatted)?
 	define('PRIME_NOTIFY_ALWAYS', true);		// Notify user even if they've already received a previous notification and have not yet visited the forum to read it?
 
 	/**
@@ -75,17 +75,26 @@ if (!class_exists('prime_notify'))
 			}
 			else
 			{
-				// Change quotes
-				$text = preg_replace('@\[quote=(?:"|&quot;)([^"]*)(?:"|&quot;):' . $uid . '\]@', "[quote=\"$1\"]", $text);
-				$text = preg_replace('@\[code=([a-z]+):' . $uid . '\]@', "[code=$1]", $text);
-				$text = preg_replace('@\[(/)?(quote|code):' . $uid . '\]@', "[$1$2]", $text);
+				// Change quotes / size / color
+				$text = preg_replace('@\[quote=([a-zA-Z0-9._-]+)\s*post_id=[0-9]+\s*time=[0-9]+\s*user_id=[0-9]+\s*:' . $uid . '\]\s*(.*[^*]+)\[/quote:' . $uid . '\]@', 'Quote from $1: "$2"', $text);
+				$text = preg_replace('@\[quote=([a-zA-Z0-9]+) [^]]*:' . $uid . '\](.*[^*]+)\[/quote:' . $uid . '\]@', 'Quote from $2: ($1)', $text);
+				$text = preg_replace('@\[quote=.?([a-zA-Z0-9]+).? [^]]*:' . $uid . '\]([^[]*)\[/quote:' . $uid . '\]@', 'Quote from $2: ($1)', $text);
+				$text = preg_replace('@\[size=[0-9]+:' . $uid . '\]([^[]*)\[/size:' . $uid . '\]@', "$1", $text);
+				$text = preg_replace('@\[color=[a-zA-Z]+:' . $uid . '\]([^[]*)\[/color:' . $uid . '\]@', "$1", $text);
+
+				// Change [url=http://www.example.com]Example[/url] to Example (http://www.example.com)
+				$text = preg_replace('@\[url=([^]]*):' . $uid . '\]([^[]*)\[/url:' . $uid . '\]@', '$2 ($1)', $text);
+				$text = preg_replace('@\[url:' . $uid . '\]([^[]*)\[/url:' . $uid . '\]@', '$1', $text);
+
+				// Change [img]Example[/img] to http://www.example.com
+				$text = preg_replace('@\[img:' . $uid . '\]([^[]*)\[/img:' . $uid . '\]@', 'Image: $1', $text);
 
 				// Change lists (quick & dirty, no checking if we're actually in a list, much less if it's ordered or unordered)
 				$text = str_replace('[*]', '* ', $text);
 				$text = $uid_param ? str_replace('[*:' . $uid . ']', '* ', $text) : preg_replace('/\[\*:' . $uid . ']/', '* ', $text);
 
 				// Change [url=http://www.example.com]Example[/url] to Example (http://www.example.com)
-				$text = preg_replace('@\[url=([^]]*):' . $uid . '\]([^[]*)\[/url:' . $uid . '\]@', '$2 ($1)', $text);
+				//$text = preg_replace('@\[url=([^]]*):' . $uid . '\]([^[]*)\[/url:' . $uid . '\]@', '$2 ($1)', $text);
 
 				// Remove all remaining BBCodes
 				//strip_bbcode($text, $uid_param); // This function replaces BBCodes with spaces, which we don't want
@@ -93,6 +102,25 @@ if (!class_exists('prime_notify'))
 				$match = get_preg_expression('bbcode_htm');
 				$replace = array('\1', '\1', '\2', '\1', '', '');
 				$text = preg_replace($match, $replace, $text);
+
+				// Change quotes / size / color
+				$text = preg_replace('@\[quote=([a-zA-Z0-9._-]+)\s*post_id=[0-9]+\s*time=[0-9]+\s*user_id=[0-9]+\s*\]\s*(.*[^*]+)\[/quote\]@', 'Quote from $1: "$2"', $text);
+				$text = preg_replace('@\[quote=([a-zA-Z0-9]+)\s*[^]]*\](.*[^*]+)\[/quote\]@', 'Quote from $2: ($1)', $text);
+				$text = preg_replace('@\[size=([0-9]+)\]([^[]*)\[/size\]@', 'Text With Size $1: "$2"', $text);
+				$text = preg_replace('@\[color=[a-zA-Z]+\]([^[]*)\[/color\]@', "$1", $text);
+				$text = preg_replace('@\[quote\]([^[]*)\[/quote\]@', 'Quote: "$1"', $text);
+				$text = preg_replace('@\[code\]([^[]*)\[/code\]@', 'Code: "$1"', $text);
+
+				// Change [url=http://www.example.com]Example[/url] to Example (http://www.example.com)
+				$text = preg_replace('@\[url=([^]]*)\]([^[]*)\[/url\]@', '$2 ($1)', $text);
+				$text = preg_replace('@\[url\]([^[]*)\[/url\]@', '$1', $text);
+				// Change [img]Example[/img] to http://www.example.com
+				$text = preg_replace('@\[img\]([^[]*)\[/img\]@', 'Image: $1', $text);
+
+				// Change [b] [i] [u] to HTML code
+				$text = preg_replace('@\[b\]([^[]*)\[/b\]@', '*$1*', $text);
+				$text = preg_replace('@\[i\]([^[]*)\[/i\]@', '/$1/', $text);
+				$text = preg_replace('@\[u\]([^[]*)\[/u\]@', '_$1_', $text);
 			}
 
 			// Change HTML smiley images to text smilies
@@ -110,6 +138,9 @@ if (!class_exists('prime_notify'))
 
 			// Remove backslashes that appear directly before single quotes
 			$text = stripslashes(trim($text));
+
+			// Remove HTML		
+			$text = strip_tags($text);
 		}
 
 		/**
@@ -178,12 +209,14 @@ if (!class_exists('prime_notify'))
 			// Use the default template
 			if (!$enabled || !$lang_path || empty($this->message) || !empty($template_dir_prefix))
 			{
-				$messenger->template($template_dir_prefix . $template, $user['user_lang']);
+				$messenger->template($template, $user['user_lang'], '', $template_dir_prefix);
+				//$messenger->template($template_dir_prefix . $template, $user['user_lang']);
 				return;
 			}
 
 			// Setup our the template
-			$messenger->template($template_dir_prefix . $template, $user['user_lang'], $lang_path . 'email');
+			$messenger->template($template, $user['user_lang'], $lang_path . 'email', $template_dir_prefix);
+			//$messenger->template($template_dir_prefix . $template, $user['user_lang'], $lang_path . 'email');
 
 			// Assign extra template variables
 			if (!PRIME_NOTIFY_ALWAYS)
