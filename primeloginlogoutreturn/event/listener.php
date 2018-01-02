@@ -2,18 +2,25 @@
 namespace primehalo\primeloginlogoutreturn\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
+use phpbb\template\template;
+use phpbb\user;
 class listener implements EventSubscriberInterface
 {
 	private $enable_login			= true;				// Enable this MOD for logging in?
+
 	private $enable_logout			= true;				// Enable this MOD for logging out?
 
 	// Variables
 	protected $template;
+
 	protected $user;
+
 	protected $board_url;
 
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(
+		template $template,
+		user $user
+	)
 	{
 		$this->template = $template;
 		$this->user = $user;
@@ -25,7 +32,7 @@ class listener implements EventSubscriberInterface
 	{
 		return array(
 			'core.page_header_after'	=> 'page_header_after',
-			'core.functions.redirect'	=> 'redirect',
+			'core.functions.redirect'	=> 'redirection',
 		);
 	}
 
@@ -65,10 +72,11 @@ class listener implements EventSubscriberInterface
 	* On a redirect check to see if this is a logout. Login automatically
 	* redirects if there's a redirect query var, so this is just for logout.
 	*/
-	public function redirect($event)
+	public function redirection($event)
 	{
-		$mode	= request_var('mode', '');
-		$redirect = request_var('redirect', '');
+		global $request;
+		$mode	= $request->variable('mode', '');
+		$redirect = $request->variable('redirect', '');
 		$redirect = str_replace('&amp;', '&', $redirect);
 		if ($mode === 'logout' && $redirect)
 		{
