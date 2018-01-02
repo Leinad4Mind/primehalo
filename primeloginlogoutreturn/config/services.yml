@@ -1,0 +1,8 @@
+services:
+    primehalo.primeloginlogoutreturn.listener:
+        class: primehalo\primeloginlogoutreturn\event\listener
+        arguments:
+            - @template
+            - @user
+        tags:
+            - { name: event.listener }
